@@ -25,9 +25,6 @@
 # define HEREDOC_PROMPT ">>"
 # define DEBUG 0
 
-typedef int			t_pipe[2];
-typedef int			(*t_builtin)(char **);
-
 extern volatile int	g_sig_status;
 
 /* === ENV === */
@@ -108,7 +105,7 @@ int					exec_pipe(t_command *cmd);
 int					exec_simple(t_command *cmd, t_minishell *ms);
 int					exec_builtin(t_command *cmd, bool skip_redirections);
 
-int					init_pipeline(int nb_of_pipes, pid_t **pid_array_ptr);
+int					init_pipeline(int nb_of_pipes, t_command *cmd);
 int					prepare_exec(t_command *cmd);
 void				exec_in_child(t_command *cmd, t_minishell *ms);
 
@@ -150,7 +147,7 @@ void				close_unused_pipes(t_pipe *pipe_array, int cmd_position,
 int					wait_for_processes(pid_t *pids, int count);
 pid_t				fork_pipeline_process(t_command *cmd, t_pipe *pipe_array,
 						int position, int nb_of_pipes);
-int					init_pipeline(int nb_of_pipes, pid_t **pid_array_ptr);
+void	clean_pipe(t_command *cmd, t_pipe *pipe_array, int nb_of_pipes);
 
 /* === PARSING === */
 
@@ -173,8 +170,7 @@ int					ft_strcmp(const char *s1, const char *s2);
 
 void				exit_status(t_minishell *ms);
 void				exit_error(char *msg);
-void				exit_free_all(t_minishell *ms);
-void				free_all(t_minishell *ms);
+void				free_all(t_minishell *ms, bool token);
 int					handle_command_error(t_command *cmd, int error_code);
 int					handle_system_error(const char *syscall);
 
@@ -193,6 +189,7 @@ int					ft_export(t_minishell *ms, char **args);
 int					ft_pwd(void);
 int					ft_unset(t_minishell *ms, char **args);
 int					ft_exit(t_minishell *ms, char **args);
+int	print_env_ordered(t_minishell *ms, t_env *src);
 
 const char			*get_token_type_string(t_token_type type);
 

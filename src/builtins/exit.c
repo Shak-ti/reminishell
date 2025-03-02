@@ -54,7 +54,7 @@ static int	exit_with_arg(char *arg)
 // TODO check free_all??
 static int	handle_exit(t_minishell *ms, int code)
 {
-	free_all(ms);
+	free_all(ms, false);
 	exit(code);
 	return (FAILURE);
 }

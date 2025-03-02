@@ -6,11 +6,11 @@ void	exit_error(char *msg)
 	exit(EXIT_FAILURE);
 }
 
-void	free_all(t_minishell *ms)
+void	free_all(t_minishell *ms, bool token)
 {
 	if (ms->line)
 		free(ms->line);
-	if (ms->tokens)
+	if (token && ms->tokens)
 		free_tokens(ms->tokens);
 	if (ms->command)
 		free_cmd(ms->command, false);

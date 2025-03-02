@@ -3,16 +3,17 @@
 void	clean_pipe(t_command *cmd, t_pipe *pipe_array, int nb_of_pipes)
 {
 	cleanup_fds(cmd);
+	free(cmd->pid_array);
 	free_cmd(cmd, true);
 	cleanup_remaining_pipes(pipe_array, nb_of_pipes);
 	free(pipe_array);
 }
 
 void	execute_pipeline_command(t_command *cmd, t_pipe *pipe_array,
-		int position, int nb_of_pipes)
+	int position, int nb_of_pipes)
 {
 	int	status;
-
+	
 	configure_pipe_fds(pipe_array, position, nb_of_pipes);
 	close_unused_pipes(pipe_array, position, nb_of_pipes);
 	if (cmd->redir)
@@ -25,7 +26,7 @@ void	execute_pipeline_command(t_command *cmd, t_pipe *pipe_array,
 		}
 	}
 	if (is_builtin(cmd->args[0]))
-		exit(exec_builtin(cmd, true));
+	exit(exec_builtin(cmd, true));
 	status = prepare_exec(cmd);
 	if (status != SUCCESS)
 	{
@@ -50,10 +51,10 @@ static int	handle_parent_pipes(t_pipe *pipe_array, int position)
 	return (SUCCESS);
 }
 
-int	init_pipeline(int nb_of_pipes, pid_t **pid_array_ptr)
+int	init_pipeline(int nb_of_pipes, t_command *cmd)
 {
-	*pid_array_ptr = malloc(sizeof(pid_t) * (nb_of_pipes + 1));
-	if (!*pid_array_ptr)
+	cmd->pid_array = malloc(sizeof(pid_t) * (nb_of_pipes + 1));
+	if (!cmd->pid_array)
 		return (handle_system_error("malloc"));
 	return (SUCCESS);
 }

@@ -1,83 +1,25 @@
 #include "minishell.h"
 
-static void	sort_keys(char **key_ordered, int size);
-static void	copy_keys(t_env *src, char **key_ordered);
-static int	print_env_ordered(t_minishell *ms, t_env *src);
+static int	export_equal(t_minishell *ms, char *arg);
 
-/* bubble sort keys */
-static void	sort_keys(char **key_ordered, int size)
+static int	export_equal(t_minishell *ms, char *arg)
 {
-	int		j;
-	int		k;
-	char	*tmp;
+	char	**tab;
 
-	j = 0;
-	while (j < size - 1)
+	tab = NULL;
+	tab = ft_split(arg, '=');
+	if (!tab)
+		return (printf("malloc error\n"), FAILURE);
+	if (!is_valid_key(tab[0]))
 	{
-		k = 0;
-		while (k < size - j - 1)
-		{
-			if (ft_strcmp(key_ordered[k], key_ordered[k + 1]) > 0)
-			{
-				tmp = key_ordered[k];
-				key_ordered[k] = key_ordered[k + 1];
-				key_ordered[k + 1] = tmp;
-			}
-			k++;
-		}
-		j++;
+		printf("export: `%s': not a valid identifier\n", tab[0]);
+		return (free_tab(tab), FAILURE);
 	}
-}
-
-/* copy keys */
-static void	copy_keys(t_env *src, char **key_ordered)
-{
-	int		i;
-	t_env	*current;
-
-	i = 0;
-	current = src;
-	while (current)
-	{
-		key_ordered[i++] = current->key;
-		current = current->next;
-	}
-	key_ordered[i] = NULL;
-}
-
-/* print env ordered */
-static void	print_env_ordered_loop(t_minishell *ms, char **key_ordered)
-{
-	int		i;
-	t_env	*current;
-
-	i = 0;
-	while (key_ordered[i])
-	{
-		current = envlst_get_env(ms, key_ordered[i]);
-		if (current->has_equal)
-			printf("export %s=\"%s\"\n", key_ordered[i], current->value);
-		else
-			printf("export %s\n", key_ordered[i]);
-		i++;
-	}
-}
-
-/* bash : export KEY=value */
-static int	print_env_ordered(t_minishell *ms, t_env *src)
-{
-	char	**key_ordered;
-	int		size;
-
-	size = envlst_len(src);
-	key_ordered = (char **)malloc(sizeof(char *) * (size + 1));
-	if (!key_ordered)
-		return (printf("malloc"), FAILURE);
-	copy_keys(src, key_ordered);
-	sort_keys(key_ordered, size);
-	print_env_ordered_loop(ms, key_ordered);
-	free(key_ordered);
-	return (SUCCESS);
+	if (tab[1] == NULL)
+		envlst_update(ms, tab[0], "", true);
+	else
+		envlst_update(ms, tab[0], tab[1], true);
+	return (free_tab(tab), SUCCESS);
 }
 
 /* ft_export
@@ -87,29 +29,11 @@ static int	print_env_ordered(t_minishell *ms, t_env *src)
 */
 int	ft_export(t_minishell *ms, char **args)
 {
-	char	**tab;
-	bool	has_equal;
-
-	tab = NULL;
-	has_equal = false;
 	if (!args[1])
 		return (print_env_ordered(ms, ms->envlst));
 	if (ft_strchr(args[1], '=') != NULL)
-	{
-		has_equal = true;
-		
-	}
-	tab = ft_split(args[1], '=');
-	if (!tab)
-		return (printf("malloc"), FAILURE);
-	if (!is_valid_key(tab[0]))
-	{
-		printf("export: `%s': not a valid identifier\n", tab[0]);
-		return (free(tab), FAILURE);
-	}
-	if (!has_equal)
-		envlst_update_without_equal(ms, args[1], true);
+		return (export_equal(ms, args[1]));
 	else
-		envlst_update(ms, tab[0], tab[1], true);
-	return (free(tab), SUCCESS);
+		envlst_update_without_equal(ms, args[1], true);
+	return (SUCCESS);
 }

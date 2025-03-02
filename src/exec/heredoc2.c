@@ -1,26 +1,5 @@
 #include "minishell.h"
 
-void	heredoc_sig_handler(int signum)
-{
-	g_sig_status = signum;
-	write(1, "\n", 1);
-}
-
-void	catch_heredoc_signals(void)
-{
-	struct sigaction	sa_int;
-	struct sigaction	sa_quit;
-
-	sa_int.sa_handler = heredoc_sig_handler;
-	sigemptyset(&sa_int.sa_mask);
-	sa_int.sa_flags = 0;
-	sa_quit.sa_handler = heredoc_sig_handler;
-	sigemptyset(&sa_quit.sa_mask);
-	sa_quit.sa_flags = 0;
-	sigaction(SIGINT, &sa_int, NULL);
-	sigaction(SIGQUIT, &sa_quit, NULL);
-}
-
 int	write_heredoc_line(int fd, char **line)
 {
 	if (write(fd, *line, ft_strlen(*line)) == -1)
@@ -34,10 +13,10 @@ int	write_heredoc_line(int fd, char **line)
 
 static int	eof_warning(const char *delimiter)
 {
-	if (g_sig_status == SIGINT)
+	if (g_sig_status == SIGINT || g_sig_status == SIGQUIT)
+	{
 		return (130);
-	if (g_sig_status == SIGQUIT)
-		return (131);
+	}
 	ft_putstr_fd("minishell: warning: here-document ", 2);
 	ft_putstr_fd("delimited by end-of-file (wanted `", 2);
 	ft_putstr_fd((char *)delimiter, 2);
@@ -52,7 +31,6 @@ int	heredoc_content(int fd, const char *delimiter)
 
 	status = SUCCESS;
 	line = NULL;
-	catch_heredoc_signals();
 	while (status == SUCCESS)
 	{
 		write(1, "> ", 2);

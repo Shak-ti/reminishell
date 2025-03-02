@@ -53,6 +53,8 @@ void	free_cmd(t_command *cmd, bool ms_aussi)
 	{
 		if (cmd->ms->envlst)
 			free_env(cmd->ms->envlst);
+		// if (cmd->pipe_array)
+		// 	free(cmd->pipe_array);
 	}
 	while (cmd)
 	{

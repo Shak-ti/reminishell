@@ -26,6 +26,7 @@ t_command	*create_cmd(t_minishell *ms)
 	cmd->exit_status = 0;
 	cmd->path = NULL;
 	cmd->ms = ms;
+	cmd->pid_array = NULL;
 	cmd->fd = ft_calloc(sizeof(t_fd), 1);
 	if (!cmd->fd)
 	{

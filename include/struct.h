@@ -1,6 +1,9 @@
 #ifndef STRUCT_H
 # define STRUCT_H
 
+typedef int			t_pipe[2];
+typedef int			(*t_builtin)(char **);
+
 /* === ENV === */
 
 typedef struct s_env
@@ -79,6 +82,7 @@ typedef struct s_command
 	int						index;
 	char					*path;
 	t_minishell				*ms;
+	pid_t					*pid_array;
 }							t_command;
 
 #endif

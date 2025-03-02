@@ -68,13 +68,13 @@ static void	setup_child_env(t_command *cmd, t_minishell *ms)
 	if (!env_array)
 	{
 		cleanup_fds(cmd);
-		free_all(ms);
+		free_all(ms, true);
 		exit(MEMORY_ERROR);
 	}
 	execve(cmd->path, cmd->args, env_array);
 	free_tab(env_array);
 	cleanup_fds(cmd);
-	free_all(ms);
+	free_all(ms, true);
 	exit(handle_system_error("execve"));
 }
 
@@ -86,7 +86,7 @@ void	exec_in_child(t_command *cmd, t_minishell *ms)
 		if (setup_redir(cmd) != SUCCESS)
 		{
 			cleanup_fds(cmd);
-			free_all(ms);
+			free_all(ms, true);
 			exit(ERROR);
 		}
 	}

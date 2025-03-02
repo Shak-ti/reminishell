@@ -3,28 +3,27 @@
 int	run_pipeline(t_command *cmd, t_pipe *pipe_array, int nb_of_pipes)
 {
 	t_command	*current;
-	pid_t		*pid_array;
 	int			position;
 	int			status;
 
-	if (init_pipeline(nb_of_pipes, &pid_array) != SUCCESS)
+	if (init_pipeline(nb_of_pipes, cmd) != SUCCESS)
 		return (ERROR);
 	current = cmd;
 	position = 0;
 	while (current)
 	{
-		pid_array[position] = fork_pipeline_process(current, pipe_array,
+		cmd->pid_array[position] = fork_pipeline_process(current, pipe_array,
 				position, nb_of_pipes);
-		if (pid_array[position] == SYSCALL_ERROR)
+		if (cmd->pid_array[position] == SYSCALL_ERROR)
 		{
 			cleanup_remaining_pipes(pipe_array, nb_of_pipes);
-			free(pid_array);
+			free(cmd->pid_array);
 			return (handle_system_error("fork"));
 		}
 		current = current->next;
 		position++;
 	}
-	status = wait_for_processes(pid_array, nb_of_pipes + 1);
+	status = wait_for_processes(cmd->pid_array, nb_of_pipes + 1);
 	cleanup_remaining_pipes(pipe_array, nb_of_pipes);
 	return (status);
 }

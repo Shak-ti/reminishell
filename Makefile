@@ -11,6 +11,7 @@ LIBFT = $(LIBFT_DIR)/libft.a
 SRC_DIR = src
 SRCS = main.c \
 	builtins/cd.c builtins/echo.c builtins/env.c builtins/export.c builtins/pwd.c builtins/unset.c builtins/exit.c \
+	builtins/export_print.c \
 	exec/exec.c exec/builtins.c exec/heredoc.c exec/get.c exec/heredoc2.c exec/clean.c exec/pipe.c exec/utils.c \
 	exec/pipe_utils.c exec/pipe_utils2.c exec/pipe2.c exec/redir.c exec/close_pipes.c exec/child.c exec/redir2.c \
 	parsing/parse.c parsing/create_cmd.c parsing/redir.c parsing/utils.c \

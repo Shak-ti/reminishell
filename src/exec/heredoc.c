@@ -11,8 +11,7 @@ int	handle_single_heredoc(const char *delimiter, const char *file)
 		return (handle_system_error("open"));
 	status = heredoc_content(fd, delimiter);
 	close(fd);
-	catch_child_signals();
-	if (status == 130 || status == 131)
+	if (status == SIGINT)
 	{
 		unlink(file);
 	}
